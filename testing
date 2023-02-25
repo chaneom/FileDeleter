@@ -2,12 +2,13 @@ import unittest
 import datetime
 import time
 import os
-from FileChecker import FileChecker
+from FileChecker import FileChecker as fc
+from Engine import Engine
 
 
 class FileDeletingTest(unittest.TestCase):
     #Tests check_time method of FileChecker object
-    def test_check_time(self):
+    def test_check(self):
         """Tests check_time method of FileChecker object
         """
         # creating a file
@@ -17,18 +18,18 @@ class FileDeletingTest(unittest.TestCase):
                        "This file should not be deleted.")
 
         # constructing FileChecker object
-        current_time = datetime.timedelta(milliseconds = 1)
-        checker = FileChecker("testfile1.txt", current_time)
+        current_time = datetime.timedelta(microseconds = 1)
+        checker = fc("testfile1.txt", current_time)
 
-        # delaying 2 sec
+        # delaying 0.1 sec
         time.sleep(0.1)
 
         # testing
-        self.assertTrue(checker.check_time())
+        self.assertTrue(checker.check())
     
 
     # Tests delete_file method of FileChecker object
-    def test_delete_file(self):
+    def test_delete(self):
         """Tests delete_file method of FileChecker object
         """
         
@@ -38,17 +39,42 @@ class FileDeletingTest(unittest.TestCase):
                        This file should be deleted.")
 
         # constructing FileChecker object
-        current_time = datetime.timedelta(milliseconds = 1)
-        checker = FileChecker("testfile2.txt", current_time)
+        current_time = datetime.timedelta(microseconds = 1)
+        checker = fc("testfile2.txt", current_time)
 
         # deleting the file
-        result = checker.delete_file()
+        result = checker.delete()
 
         # testing
-        self.assertEquals("File deleted successfully", result)
+        self.assertEquals("File at \"testfile2.txt\" deleted successfully", result)
         self.assertFalse(os.path.exists("testfile2.txt"))
 
 
+    # testing Engine
+    def test_engine(self):
+        """Tests init, new_file_delete_schedule and delete_file method of Engine object
+        """
+        
+        # creating a file
+        with open("testfile3.txt", "w") as file:
+            file.write("testfile3.txt\n\
+                       This file should be deleted.")
+
+        # constructing Engine object
+        e = Engine()
+
+        # new_file_delete_schedule
+        e.new_file_delete_schedule("testfile3.txt", datetime.timedelta(microseconds=1))
+
+        # delaying 0.1 sec
+        time.sleep(0.1)
+
+        # delete_file
+        result = e.delete_file()
+
+        # testing
+        self.assertEquals("File at \"testfile3.txt\" deleted successfully\n", result)
+        self.assertFalse(os.path.exists("testfile3.txt"))
 
 if __name__ == "__main__":
     unittest.main()
