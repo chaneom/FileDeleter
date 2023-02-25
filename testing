@@ -42,6 +42,9 @@ class FileDeletingTest(unittest.TestCase):
         current_time = datetime.timedelta(microseconds = 1)
         checker = fc("testfile2.txt", current_time)
 
+        # delaying 0.1 sec
+        time.sleep(0.1)
+
         # deleting the file
         result = checker.delete()
 

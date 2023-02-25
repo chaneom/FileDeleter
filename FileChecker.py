@@ -20,17 +20,21 @@ class FileChecker:
 
     # Check if it's time to delete the file
     def check(self) -> bool:
+        """Checks if the scheduled time has passed
+        """
         if datetime.datetime.now() < self.deletion_time:
             return False
         else:
             return True
-    
-    """
-    exit() is a function that stops program to run.
-    """
 
     def delete(self) -> str:
-        # Delete the file
+        """Deletes the file
+
+        Make sure to call this only after self.check() method has returned true.
+        """
+        if not self.check():
+            return "It still has some time left: " + self.deletion_time.strftime("%Y-%m-%d %H:%M:%S")
+        
         try:
             os.remove(self.path)
             self.status = True
