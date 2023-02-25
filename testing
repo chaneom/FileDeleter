@@ -1,0 +1,54 @@
+import unittest
+import datetime
+import time
+import os
+from FileChecker import FileChecker
+
+
+class FileDeletingTest(unittest.TestCase):
+    #Tests check_time method of FileChecker object
+    def test_check_time(self):
+        """Tests check_time method of FileChecker object
+        """
+        # creating a file
+        with open("testfile1.txt", "w") as file:
+            file.write("Warning: This is a testing file 1.\n" +
+                       "I repeat: This is a testing file 1.\n" +
+                       "This file should not be deleted.")
+
+        # constructing FileChecker object
+        current_time = datetime.timedelta(milliseconds = 1)
+        checker = FileChecker("testfile1.txt", current_time)
+
+        # delaying 2 sec
+        time.sleep(0.1)
+
+        # testing
+        self.assertTrue(checker.check_time())
+    
+
+    # Tests delete_file method of FileChecker object
+    def test_delete_file(self):
+        """Tests delete_file method of FileChecker object
+        """
+        
+        # creating a file
+        with open("testfile2.txt", "w") as file:
+            file.write("testfile2.txt\n\
+                       This file should be deleted.")
+
+        # constructing FileChecker object
+        current_time = datetime.timedelta(milliseconds = 1)
+        checker = FileChecker("testfile2.txt", current_time)
+
+        # deleting the file
+        result = checker.delete_file()
+
+        # testing
+        self.assertEquals("File deleted successfully", result)
+        self.assertFalse(os.path.exists("testfile2.txt"))
+
+
+
+if __name__ == "__main__":
+    unittest.main()
