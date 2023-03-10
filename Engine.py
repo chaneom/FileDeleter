@@ -56,10 +56,25 @@ class Engine:
             writer.writerow(["Path", "Date"])
             for path, date in self.files.items():
                 writer.writerow([path, date])
-            
+
+
     def __repr__(self) -> str:
-        """Will return the formatted list of paths and corresponding dates to delete"""
-        pass
+        """
+        Will return the formatted list of paths and corresponding dates to delete
+        
+        Ex.
+        Path                                              Time to Delete
+        ------------------------------------------------------------------------------------------
+        C:/Users/chane/Desktop/many_files_to_delete             2023-03-10 01:00
+        
+        """
+        repressentation = f"{'Path ':<50}{'Time to Delete':<30}\n{'-'*90}\n"
+
+        for path, date in self.files.items():
+            repressentation += f"{path:<50}{date:<30}\n"
+        
+        return repressentation
+
 
     def add_file_to_delete(self, path: str, date: str) -> bool:
         """Adds filepath and date to Path_and_Condition.csv"""
