@@ -17,9 +17,10 @@ class Engine:
                 if len(row) > 0:
                     self.files[row[0]] = row[1]
 
-
-    def condition_met(self, date: str) -> bool:
-        """Checks weather condition is met or not for certain file"""
+    @staticmethod
+    def condition_met(date: str) -> bool:
+        """Checks weather condition is met or not for certain file
+        """
         # https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
         # https://www.iso.org/iso-8601-date-and-time-format.html
         date = datetime.fromisoformat(date)
@@ -28,12 +29,13 @@ class Engine:
         else:
             return False
 
-    def path_exists(self, p: str) -> bool:
+    @staticmethod
+    def path_exists(p: str) -> bool:
         """Checks if the file/dir exists"""
         path = Path(p)
         return path.exists()
 
-    def delete(self) -> bool:
+    def delete(self):
         """This method will delete files.
 
         Loops around the extracted data of csv file and
@@ -41,7 +43,7 @@ class Engine:
         """
         deleted_paths = []
         for path, date in self.files.items():
-            if self.path_exists(path) and self.condition_met(date):
+            if Engine.path_exists(path) and Engine.condition_met(date):
                 if Path(path).is_dir():
                     shutil.rmtree(path)
                 else:
@@ -65,18 +67,18 @@ class Engine:
         Ex.
         Path                                              Time to Delete
         ------------------------------------------------------------------------------------------
-        C:/Users/chane/Desktop/many_files_to_delete             2023-03-10 01:00
+        C:/Users/name/Desktop/many_files_to_delete             2023-03-10 01:00
         
         """
-        repressentation = f"{'Path ':<50}{'Time to Delete':<30}\n{'-'*90}\n"
+        representation = f"{'Path ':<50}{'Time to Delete':<30}\n{'-'*90}\n"
 
         for path, date in self.files.items():
-            repressentation += f"{path:<50}{date:<30}\n"
+            representation += f"{path:<50}{date:<30}\n"
         
-        return repressentation
+        return representation
 
 
-    def add_file_to_delete(self, path: str, date: str) -> bool:
+    def add_file_to_delete(self, path: str, date: str):
         """Adds filepath and date to Path_and_Condition.csv"""
         with open(self.csv_path, "a", newline="") as csvfile:
             writer = csv.writer(csvfile)
