@@ -1,0 +1,7 @@
+This is future plan for this project:
+
+Create desktop app that implements gui for this program.
+Later on, I might use inheritance to abstract out an algorithm:
+"Action happens when specified time happens"
+This could be anything. This FileDeleter class would be one implementation of such abstract class.
+I could ultimately make timer for everything (or every action that's scriptable)

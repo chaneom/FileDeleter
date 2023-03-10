@@ -1,87 +1,81 @@
 from datetime import datetime
-from pathlib import Path
-import shutil
+from FileDeleter import FileDeleter
 import os
-import csv
 
-class Engine:
-    def __init__(self, csv_path: str):
-        """Processes Path_and_Condition.csv"""
-        self.files = {}
-        self.csv_path = csv_path
+# default csv file to read if user doesn't have csv file of their own
+DEFAULT_CSV = "FilesToDelete.csv"
 
-        with open(csv_path, "r", newline="") as file:
-            reader = csv.reader(file)
-            reader.__next__()
-            for row in reader:
-                if len(row) > 0:
-                    self.files[row[0]] = row[1]
+def get_date() -> str:
+    """Gets user input for date in which to delete a file"""
+    while True:
+        user_date = input("Type a date in \"YYYY-MM-DD 00:00:00:000\" (year, month, day, hour, minutes, seconds, and milliseconds): ")
+        print()
+        try:
+            datetime.fromisoformat(user_date)
+            return user_date
+        except ValueError:
+            print(f"{user_date} is not valid")
 
-    @staticmethod
-    def condition_met(date: str) -> bool:
-        """Checks weather condition is met or not for certain file
-        """
-        # https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
-        # https://www.iso.org/iso-8601-date-and-time-format.html
-        date = datetime.fromisoformat(date)
-        if datetime.now() > date:
-            return True
+
+def get_path() -> str:
+    """Gets user input for file to delete"""
+    while True:
+        user_path = input("Type a path to file/directories to delete: ")
+        print()
+        if os.path.exists(user_path):
+            return user_path
         else:
-            return False
+            print(f"{user_path} is not valid")
 
-    @staticmethod
-    def path_exists(p: str) -> bool:
-        """Checks if the file/dir exists"""
-        path = Path(p)
-        return path.exists()
 
-    def delete(self):
-        """This method will delete files.
-
-        Loops around the extracted data of csv file and
-        deletes file if and only if condition_met() and file_exists() returns true.
-        """
-        deleted_paths = []
-        for path, date in self.files.items():
-            if Engine.path_exists(path) and Engine.condition_met(date):
-                if Path(path).is_dir():
-                    shutil.rmtree(path)
+def get_csv() -> str:
+    """Gets user input for csv file to read for Engine object
+    
+    It will return DEFAULT_CSV if user doesn't provide input
+    """
+    while True:
+            csv_path = input("Type the path of csv file to read (hit Enter to use default one): ")
+            print()
+            if len(csv_path) == 0:
+                return DEFAULT_CSV
+            else:
+                if os.path.exists(csv_path):
+                    return csv_path
                 else:
-                    os.remove(path)
-                deleted_paths.append(path)
-        
-        for path in deleted_paths:
-            del self.files[path]
-        
-        with open(self.csv_path, "w", newline="") as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(["Path", "Date"])
-            for path, date in self.files.items():
-                writer.writerow([path, date])
+                    print(f"{csv_path} is not valid")
 
 
-    def __repr__(self) -> str:
-        """
-        Will return the formatted list of paths and corresponding dates to delete
-        
-        Ex.
-        Path                                              Time to Delete
-        ------------------------------------------------------------------------------------------
-        C:/Users/name/Desktop/many_files_to_delete             2023-03-10 01:00
-        
-        """
-        representation = f"{'Path ':<50}{'Time to Delete':<30}\n{'-'*90}\n"
+def main() -> None: 
+    """The main program"""
+    # initializing Engine by reading csv file
+    csv_path = get_csv()
+    E = FileDeleter(csv_path)
+    path_and_date = {}
+    
+    # printing schedules
+    print(E)
+    print()
 
-        for path, date in self.files.items():
-            representation += f"{path:<50}{date:<30}\n"
-        
-        return representation
+    # getting user input
+    add_input = input("Do you want to add a file to delete? (type y for yes, hit enter to skip) ")
+    print()
+    while add_input == "y":
+        user_path = get_path()
+        user_date = get_date()
+        path_and_date[user_path] = user_date
+        add_input = input("Do you want to add another file to delete? (type y for yes, hit enter to skip) ")
+        print()
 
+    # adding the user input to Engine
+    for p, d in path_and_date.items():
+        E.add_file_to_delete(p, d)
 
-    def add_file_to_delete(self, path: str, date: str):
-        """Adds filepath and date to Path_and_Condition.csv"""
-        with open(self.csv_path, "a", newline="") as csvfile:
-            writer = csv.writer(csvfile)
-            self.files[path] = date
-            writer.writerow([path, date])
-        
+    # deleting files
+    E.delete()
+
+    # printing schedules
+    print(E)
+    print()
+
+if __name__ == "__main__":
+    main()
