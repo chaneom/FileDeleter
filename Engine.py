@@ -57,8 +57,8 @@ class Engine:
             for path, date in self.files.items():
                 writer.writerow([path, date])
             
-
-    def get_path_and_conditions(self) -> str:
+    def __repr__(self) -> str:
+        """Will return the formatted list of paths and corresponding dates to delete"""
         pass
 
     def add_file_to_delete(self, path: str, date: str) -> bool:
