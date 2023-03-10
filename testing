@@ -26,6 +26,9 @@ class FileDeletingTest(unittest.TestCase):
 
         # testing
         self.assertTrue(checker.check())
+        checker.delete()
+
+
     
 
     # Tests delete_file method of FileChecker object

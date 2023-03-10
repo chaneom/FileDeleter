@@ -1,3 +1,0 @@
-Warning: This is a testing file 1.
-I repeat: This is a testing file 1.
-This file should not be deleted.
