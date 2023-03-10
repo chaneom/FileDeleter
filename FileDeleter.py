@@ -10,7 +10,7 @@ class FileDeleter:
         self.files = {}
         self.csv_path = csv_path
 
-        with open(csv_path, "r", newline="") as file:
+        with open(csv_path, "r", newline="", encoding = "utf-8") as file:
             reader = csv.reader(file)
             reader.__next__()
             for row in reader:
@@ -53,7 +53,7 @@ class FileDeleter:
         for path in deleted_paths:
             del self.files[path]
         
-        with open(self.csv_path, "w", newline="") as csvfile:
+        with open(self.csv_path, "w", newline="", encoding = "utf-8") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(["Path", "Date"])
             for path, date in self.files.items():
@@ -80,7 +80,7 @@ class FileDeleter:
 
     def add_file_to_delete(self, path: str, date: str):
         """Adds filepath and date to Path_and_Condition.csv"""
-        with open(self.csv_path, "a", newline="") as csvfile:
+        with open(self.csv_path, "a", newline="", encoding = "utf-8") as csvfile:
             writer = csv.writer(csvfile)
             self.files[path] = date
             writer.writerow([path, date])

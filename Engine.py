@@ -20,7 +20,7 @@ def get_date() -> str:
 def get_path() -> str:
     """Gets user input for file to delete"""
     while True:
-        user_path = input("Type a path to file/directories to delete: ")
+        user_path = input("Type a path to file/directories to delete: ").replace("\"", "")
         print()
         if os.path.exists(user_path):
             return user_path
@@ -34,15 +34,15 @@ def get_csv() -> str:
     It will return DEFAULT_CSV if user doesn't provide input
     """
     while True:
-            csv_path = input("Type the path of csv file to read (hit Enter to use default one): ")
+            csv_path = input("Type the path of csv file to read (hit Enter to use default one): ").replace("\"", "")
             print()
-            if len(csv_path) == 0:
-                return DEFAULT_CSV
-            else:
+            if csv_path:
                 if os.path.exists(csv_path):
                     return csv_path
                 else:
                     print(f"{csv_path} is not valid")
+            else:
+                return DEFAULT_CSV
 
 
 def main() -> None: 
@@ -50,25 +50,20 @@ def main() -> None:
     # initializing Engine by reading csv file
     csv_path = get_csv()
     E = FileDeleter(csv_path)
-    path_and_date = {}
     
     # printing schedules
     print(E)
     print()
 
-    # getting user input
+    # getting user input and adding it to Engine
     add_input = input("Do you want to add a file to delete? (type y for yes, hit enter to skip) ")
     print()
     while add_input == "y":
         user_path = get_path()
         user_date = get_date()
-        path_and_date[user_path] = user_date
+        E.add_file_to_delete(user_path, user_date)
         add_input = input("Do you want to add another file to delete? (type y for yes, hit enter to skip) ")
         print()
-
-    # adding the user input to Engine
-    for p, d in path_and_date.items():
-        E.add_file_to_delete(p, d)
 
     # deleting files
     E.delete()
