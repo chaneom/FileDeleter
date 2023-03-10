@@ -1,4 +1,5 @@
-from FileChecker import FileChecker as fc
+from Engine import Engine
 
 if __name__ == "__main__":
-    pass
+    E = Engine()
+    E.delete()
